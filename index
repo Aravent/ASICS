@@ -1,0 +1,260 @@
+<?php
+
+//简略介绍
+//1为添加操作
+//2为删除操作
+//3为修改操作
+//4为数据输出操作，获得记录数
+//5为管理员登陆操作，用于返回密码（MD5）及相关权限等级
+//6为修改管理员信息（密码，权限等级）操作
+//7为删除管理员操作
+
+$status="{\"status\":";  //JSON输出字符
+$message=",\"message\":\"";
+$data="\",\"data\":";
+$addok="{\"information\":\"";
+$id="{\"id\":\"";
+$name="\",\"name\":\"";
+$credit="\",\"credit\":\"";
+$option="\",\"option\":\"";
+$note="\",\"note\":\"";
+$ss="\"}}";
+$ff="\"}";
+$tt="}";
+$nnc="200";
+$nnb="501";
+$nnd="401";
+$nnf="201";
+$nbc="ok";
+$nbd="bad";
+$addoption="由管理员新建";
+$addnote="初始学分";
+
+$con = mysql_connect("","","");  //全局连接数据库
+
+if($_GET["key"]==e1152c54e099a972f1471a)  //检查密钥 否则返回201
+{
+  if($_GET["state"]=="0")   //0为查询操作
+  {
+    if($_GET["id"]!="")   //学号
+    {
+      if (!$con)
+      {
+        die($status.$nnb.$message.$nbd.$data);
+      }
+      mysql_query("SET NAMES GB2312");  
+      mysql_select_db("", $con);
+      $dd = $_GET["id"];
+      $result = mysql_query("SELECT * FROM api_xf_student WHERE id='" . $dd . "'");  //执行查询学号SQL语句
+      echo $status.$nnc.$message.$nbc.$data;
+      while($row = mysql_fetch_array($result))
+      {
+        echo $id.$row[0].$name.$row[1].$credit.$row[2].$option.$row[3].$note.$row[4].$ff;
+      }
+        echo $tt;
+    }
+    elseif($_GET["name"]!="")   //姓名
+    {
+      if (!$con)
+      {
+        die($status.$nnb.$message.$nbd.$data);
+      }
+      mysql_query("SET NAMES GB2312");  
+      mysql_select_db("", $con);
+      $dd = $_GET["name"];
+      $result = mysql_query("SELECT * FROM api_xf_student WHERE stuname='" . $dd . "'");  //执行查询姓名SQL语句
+      echo $status.$nnc.$message.$nbc.$data;
+      while($row = mysql_fetch_array($result))
+      {
+        echo $id.$row[0].$name.$row[1].$credit.$row[2].$option.$row[3].$note.$row[4].$ff;
+      }
+        echo $tt;
+    }
+    elseif($_GET["credit1"]!="")   //学分区间
+    {
+      if($_GET["credit2"]!="")
+	  {
+        if (!$con)
+          {
+            die($status.$nnb.$message.$nbd.$data);
+          }
+        mysql_query("SET NAMES GB2312");  
+        mysql_select_db("", $con);
+        $dd1 = $_GET["credit1"];
+	    $dd2 = $_GET["credit2"];
+        $result = mysql_query("SELECT * FROM api_xf_student WHERE credit BETWEEN '" . $dd1 . "' AND '" . $dd2 . "'");  //执行查询学分区间SQL语句
+        echo $status.$nnc.$message.$nbc.$data;
+        while($row = mysql_fetch_array($result))
+          {
+            echo $id.$row[0].$name.$row[1].$credit.$row[2].$option.$row[3].$note.$row[4].$ff;
+          }
+            echo $tt;
+      }
+    }
+    else
+	  echo $status.$nnf.$message.$nbd.$ff;
+  }
+  elseif($_GET["state"]=="1")   //1为添加操作
+  {
+    if($_GET["addid"]!="")
+	{
+	  if($_GET["addname"]!="")
+	  {
+        if (!$con)
+          {
+            die($status.$nnb.$message.$nbd.$data);
+          }
+        mysql_query("SET NAMES GB2312");  
+        mysql_select_db("", $con);
+        $Add1 = $_GET["addid"];
+        $Add2 = $_GET["addname"];
+        $Add3 = $_GET["note"];
+        mysql_query("INSERT INTO api_xf_student (id, stuname, credit, options, note) VALUES ( '$Add1', '$Add2', '0', '$addoption', '$Add3')");  //执行添加学生信息SQL语句
+		mysql_close($con);
+		echo $status.$nnc.$message.$nbc.$data.$addok. "success" .$ff.$tt;
+	  }
+	  else
+	    echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's name" .$ff.$tt;  //"姓名";
+	}
+	else
+	  echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's id" .$ff.$tt;  //"学号";
+  }
+  elseif($_GET["state"]=="2")   //2为删除操作
+  {
+	if($_GET["id"]!="")  //判断id是否正确
+	{		
+	  if($_GET["dpass"]=="dp34s54sd32k22")  //判断是否有删除密钥
+	  {
+		if (!$con)
+        {
+          die('Could not connect: ' . mysql_error());
+        }
+		$dd = $_GET["id"];
+        mysql_select_db("", $con);
+        mysql_query("DELETE FROM api_xf_student WHERE id='" . $dd . "'");  //执行删除SQL语句
+        mysql_close($con);  
+		echo "Delete Success";
+      }
+	  else
+		echo "Error Key";
+	}
+	else
+		echo "Error Id";
+  }
+  elseif($_GET["state"]=="3")   //3为修改操作
+  {
+    if($_GET["id"]!="")  //主键id检索学生信息
+	{
+	  if($_GET["upcredit"]!="")  //判断是否存在学分信息
+	  {
+		if($_GET["upoption"]!="")  //判断是否存在操作信息
+		{
+		  if($_GET["upnote"]!="")  //判断是否存在备注信息
+		  {
+            if (!$con)
+            {
+              die($status.$nnb.$message.$nbd.$data);
+            }
+            mysql_query("SET NAMES GB2312");  
+            mysql_select_db("", $con);
+            $dd = $_GET["id"];
+            $Add1 = $_GET["upcredit"];
+            $Add2 = $_GET["upoption"];
+			$Add3 = $_GET["upnote"];
+            mysql_query("UPDATE api_xf_student SET credit = '$Add1', options = '$Add2', note = '$Add3' WHERE id = '" . $dd . "'");  //执行修改学生信息SQL语句
+		    mysql_close($con);
+		    echo $status.$nnc.$message.$nbc.$data.$addok. "success" .$ff.$tt;
+		  }
+		  else
+	        echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's note" .$ff.$tt;  //备注
+		}
+		else
+	        echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's note" .$ff.$tt;  //操作
+	  }
+	  else
+	    echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's credit" .$ff.$tt;  //学分
+	}
+	else
+	  echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's id" .$ff.$tt;  //学号，检索学生信息，主键
+  }
+  elseif($_GET["state"]=="4")   //4为数据输出操作，获得记录数
+  {
+	if (!$con)
+    {
+      die('Could not connect: ' . mysql_error());
+    }
+
+    mysql_query("SET NAMES GB2312");  
+    mysql_select_db("", $con);
+
+    $sql1='SELECT COUNT(*) FROM api_xf_student';  //获取学生表记录数
+    $res1=mysql_query($sql1);
+    list($cnt1)=mysql_fetch_row($res1);
+
+    $sql2='SELECT COUNT(*) FROM api_xf_aminuser';  //获取管理员表记录数
+    $res2=mysql_query($sql2);
+    list($cnt2)=mysql_fetch_row($res2);
+
+    echo "{" . $cnt1 . "}{" . $cnt2 . "}";
+  }
+    elseif($_GET["state"]=="5")   //5为管理员登陆操作，用于返回密码（MD5）及相关权限等级
+  {
+    if($_GET["username"]!="")
+    {
+      if (!$con)
+      {
+        die($status.$nnb.$message.$nbd.$data);
+      }
+      mysql_query("SET NAMES GB2312");  
+      mysql_select_db("", $con);
+      $dd = $_GET["username"];
+      $result = mysql_query("SELECT * FROM api_xf_aminuser WHERE username='" . $dd . "'");
+	  if(!$result)
+	  {
+		echo "0";
+	  }
+	  while($row = mysql_fetch_array($result))
+      {
+        echo "{" . $row[2] . "}{" . $row[3] . "}";
+      }
+    }
+	else 
+		echo "BAD";
+  }
+  elseif($_GET["state"]=="6")   //6为修改管理员信息（密码，权限等级）操作
+  {
+    if($_GET["username"]!="")  //主键username检索管理员信息
+	{
+	  if($_GET["password"]!="")  //判断是否存在密码修改信息
+	  {
+		if($_GET["power"]!="")  //判断是否存在权限修改信息
+		{
+            if (!$con)
+            {
+              die($status.$nnb.$message.$nbd.$data);
+            }
+            mysql_query("SET NAMES GB2312");  
+            mysql_select_db("", $con);
+            $dd = $_GET["id"];
+            $Add1 = $_GET["upcredit"];
+            $Add2 = $_GET["upoption"];
+			$Add3 = $_GET["upnote"];
+            mysql_query("UPDATE api_xf_student SET credit = '$Add1', options = '$Add2', note = '$Add3' WHERE id = '" . $dd . "'");  //执行修改学生信息SQL语句
+		    mysql_close($con);
+		    echo $status.$nnc.$message.$nbc.$data.$addok. "success" .$ff.$tt;
+		}
+		else
+	        echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's note" .$ff.$tt;  //操作
+	  }
+	  else
+	    echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's credit" .$ff.$tt;  //学分
+	}
+	else
+	  echo $status.$nnf.$message.$nbd.$data.$addok. "please enter the student's id" .$ff.$tt;  //学号，检索学生信息，主键
+  }
+  else
+	echo $status.$nnf.$message.$nbd.$ff;
+}
+  else
+	echo $status.$nnd.$message.$nbd.$ff;
+?>
