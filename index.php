@@ -53,7 +53,7 @@ if($_GET["key"]==e1152c54e099a972f1471a)  //检查密钥 否则返回201
       }
         echo $tt;
     }
-    elseif($_GET["name"]!="")   //姓名
+    elseif($_GET["name"]!="")   //姓名f
     {
       if (!$con)
       {
